@@ -59,6 +59,7 @@ const COIN = {
 //   4 = exit (locked until all coins collected)
 // ------------------------------------------------------------
 const TILE_SIZE = 50;
+const SPRITE_SIZE = 16;
 
 const MAZE = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -130,6 +131,7 @@ let coinSheet;
 function preload() {
   characterSheet = loadImage("assets/images/redone_sprite.png");
   coinSheet      = loadImage("assets/images/apple_sprite.png");
+  bgSheet = loadImage("assets/images/bush_sprite.png")
 }
 
 // ============================================================
@@ -203,9 +205,11 @@ function draw() {
 // top-left of each tile.
 // The exit tile changes colour when all coins are collected.
 // ------------------------------------------------------------
-function drawMaze() {
+
+ function drawMaze() {
   rectMode(CORNER);
   noStroke();
+  
 
   for (let row = 0; row < MAZE.length; row++) {
     for (let col = 0; col < MAZE[row].length; col++) {
@@ -215,17 +219,47 @@ function drawMaze() {
       if (tile === 4) {
         if (coinsCollected === coins.length) {
           fill(30, 200, 120); // bright green — exit is open
+          push();
+  imageMode(CORNER);
+  image(bgSheet, col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE / 2, TILE_SIZE / 2, 14 * SPRITE_SIZE, 0 * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE);
+  image(bgSheet, col * TILE_SIZE + TILE_SIZE / 2, row * TILE_SIZE, TILE_SIZE / 2, TILE_SIZE / 2, 15 * SPRITE_SIZE, 0 * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE);
+  image(bgSheet, col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2, 14 * SPRITE_SIZE, 1 * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE);
+  image(bgSheet, col * TILE_SIZE + TILE_SIZE / 2, row * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2, 15 * SPRITE_SIZE, 1 * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE);
+  pop();
         } else {
-          fill(60, 100, 80);  // dim green — exit is locked
+          fill(60, 100, 80); // dim green — exit is locked
+          drawWallSprite(my_brick, col, row);
         }
       } else {
         let c = TILE_COLORS[tile];
         fill(c[0], c[1], c[2]);
       }
 
-      rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      if (tile === 0 || tile === 2 || tile === 3) {
+        drawWallSprite(my_floor, col, row);
+      } 
+
+      if (tile === 1) {
+        drawWallSprite(my_brick, col, row);
+      }
+
+      
+      //rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
   }
+} 
+
+  
+
+let my_brick = {sx: 1, sy: 0};
+let my_floor = {sx: 11, sy: 4};
+
+
+function drawWallSprite(block, cx, cy) {
+  push();
+  imageMode(CORNER);
+  image(bgSheet, cx * TILE_SIZE, cy * TILE_SIZE, TILE_SIZE, TILE_SIZE, block.sx * SPRITE_SIZE, block.sy * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE);
+  pop();
 }
 
 // ------------------------------------------------------------
